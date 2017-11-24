@@ -4,8 +4,8 @@ RUN mkdir /app
 
 WORKDIR /app
 
-ADD ./target/user_interface-1.0-SNAPSHOT.jar /app
+ADD ./user_interfaceJSP/target/user_interface-JSP-1.0-SNAPSHOT.jar /app
 
 EXPOSE 8080
 
-CMD ["java", "-jar", "user_interface-1.0-SNAPSHOT.jar"]
+CMD ["java", "-jar", "user_interface-JSP-1.0-SNAPSHOT.jar"]

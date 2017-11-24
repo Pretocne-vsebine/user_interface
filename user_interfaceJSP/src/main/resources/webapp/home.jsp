@@ -24,11 +24,33 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-    <title>KumuluzEE JSF sample</title>
+    <title>Streaming service</title>
 </head>
 <body>
-    <h2>Please enter customer data below:</h2>
-    <form action="${pageContext.request.contextPath}/customers" method="post">
+    <h2>List</h2>
+    <jsp:include page="${pageContext.request.contextPath}/albums"/>
+
+    <h1>Under construction! Not Working...</h1>
+    <h2>Add new</h2>
+    <h3>album:</h3>
+    <form action="${pageContext.request.contextPath}/albums" method="post">
+        <label for="id">ID:
+            <input type="text" id="Albumid" name="id"/>
+        </label>
+        <label for="firstName">First name:
+            <input type="text" id="a" name="firstName"/>
+        </label>
+        <label for="lastName">Last name:
+            <input type="text" id="b" name="lastName"/>
+        </label>
+        <br/>
+        <br/>
+        <input type="submit" id="c" name="submit" value="Add"/>
+        <br/>
+    </form>
+
+    <h3>clip:</h3>
+    <form action="${pageContext.request.contextPath}/clips" method="post">
         <label for="id">ID:
             <input type="text" id="id" name="id"/>
         </label>
@@ -42,7 +64,6 @@
         <br/>
         <input type="submit" id="submit" name="submit" value="Add"/>
         <br/>
-        <a href="welcome.jsp">Home</a>
     </form>
 </body>
 </html>

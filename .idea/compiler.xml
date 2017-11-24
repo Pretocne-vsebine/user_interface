@@ -7,12 +7,15 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="jsp" />
-        <module name="user_interface" />
+        <module name="user_interfaceBL" />
+        <module name="user_interfaceJSP" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="jsp" target="1.5" />
-      <module name="user_interface" target="1.5" />
+      <module name="user_interface" target="1.8" />
+      <module name="user_interfaceBL" target="1.8" />
+      <module name="user_interfaceJSP" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>

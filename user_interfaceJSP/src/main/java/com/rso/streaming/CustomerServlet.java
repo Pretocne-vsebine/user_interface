@@ -20,42 +20,35 @@
 */
 package com.rso.streaming;
 
+import javax.inject.Inject;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import com.rso.streaming.ententies.*;
 import java.util.List;
 
-/**
- * @author Benjamin Kastelic
- * @since 2.3.0
- */
-@WebServlet("/customers")
+@WebServlet("/albums")
 public class CustomerServlet extends HttpServlet {
+
+    @Inject
+    private AlbumRestClient albumRestClient;
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        List<Customer> customers = Database.getCustomers();
-        for(Customer customer : customers) {
-            response.getWriter().write(customer.toString() + "<br/>");
+        List<Album> albums = albumRestClient.getAlbums();
+        for(Album a : albums) {
+            response.getWriter().write(a.toString() + "<br/>");
         }
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String id = request.getParameter("id");
-        String firstName = request.getParameter("firstName");
-        String lastName = request.getParameter("lastName");
+        Album a = new Album(request.getParameter("albumTitle"), request.getParameter("albumArtist"));
 
-        Customer customer = new Customer();
-        customer.setId(id);
-        customer.setFirstName(firstName);
-        customer.setLastName(lastName);
-
-        Database.addCustomer(customer);
-
-        response.sendRedirect("input.jsp");
+        albumRestClient.addAlbum(a);
+        response.sendRedirect("home.jsp");
     }
 }

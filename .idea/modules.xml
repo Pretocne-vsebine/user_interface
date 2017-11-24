@@ -4,6 +4,8 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/jsp.iml" filepath="$PROJECT_DIR$/jsp.iml" />
       <module fileurl="file://$PROJECT_DIR$/user_interface.iml" filepath="$PROJECT_DIR$/user_interface.iml" />
+      <module fileurl="file://$PROJECT_DIR$/user_interfaceBL/user_interfaceBL.iml" filepath="$PROJECT_DIR$/user_interfaceBL/user_interfaceBL.iml" />
+      <module fileurl="file://$PROJECT_DIR$/user_interfaceJSP/user_interfaceJSP.iml" filepath="$PROJECT_DIR$/user_interfaceJSP/user_interfaceJSP.iml" />
     </modules>
   </component>
 </project>

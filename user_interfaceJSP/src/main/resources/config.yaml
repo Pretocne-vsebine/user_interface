@@ -1,0 +1,16 @@
+kumuluzee:
+  name: user_interface
+  env:
+    name: dev
+  version: 1.0.0
+  server:
+    base-url: http://localhost:8080
+    http:
+      port: 8080
+  config:
+    etcd:
+      hosts: http://192.168.99.100:2379
+rest-properties:
+  external-dependencies:
+    clip-service:
+      url: http://192.168.99.100:8080/v1
