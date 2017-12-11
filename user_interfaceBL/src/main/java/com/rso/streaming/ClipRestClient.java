@@ -26,6 +26,7 @@ import com.kumuluz.ee.common.runtime.EeRuntime;
 import com.kumuluz.ee.discovery.annotations.DiscoverService;
 import com.kumuluz.ee.discovery.enums.AccessType;
 import com.rso.streaming.ententies.Album;
+import com.rso.streaming.ententies.Clip;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -37,7 +38,6 @@ import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.ThreadContext;
 
 import javax.annotation.PostConstruct;
-import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.ws.rs.InternalServerErrorException;
@@ -48,7 +48,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RequestScoped
-public class AlbumRestClient {
+public class ClipRestClient {
 
     private HttpClient httpClient;
     private ObjectMapper objectMapper;
@@ -57,18 +57,15 @@ public class AlbumRestClient {
     @DiscoverService(value = "clip_management", version = "1.0.x", environment = "dev", accessType = AccessType.GATEWAY)
     private String urlString;
 
-    @Inject
-    private RestConfig restConfig;
-
     @PostConstruct
     private void init() {
         httpClient = HttpClientBuilder.create().build();
         objectMapper = new ObjectMapper();
     }
 
-    public List<Album> getAlbums() {
+    public List<Clip> getClips() {
         try {
-            HttpGet request = new HttpGet(urlString + "/v1/albums");
+            HttpGet request = new HttpGet(urlString + "/v1/clips");
             HttpResponse response = httpClient.execute(request);
 
             int status = response.getStatusLine().getStatusCode();
@@ -80,7 +77,7 @@ public class AlbumRestClient {
                     return getObjects(EntityUtils.toString(entity));
             } else if (status == 404) { }
             else {
-                String msg = "Remote server '" + urlString + "/v1/albums" + "' is responded with status " + status + ".";
+                String msg = "Remote server '" + urlString + "/v1/clips" + "' is responded with status " + status + ".";
                 //log.error(msg);
                 throw new InternalServerErrorException(msg);
             }
@@ -93,39 +90,14 @@ public class AlbumRestClient {
         return new ArrayList<>();
     }
 
-    private List<Album> getObjects(String json) throws IOException {
+    private List<Clip> getObjects(String json) throws IOException {
         return json == null ? new ArrayList<>() : objectMapper.readValue(json,
-                objectMapper.getTypeFactory().constructCollectionType(List.class, Album.class));
+                objectMapper.getTypeFactory().constructCollectionType(List.class, Clip.class));
     }
 
-    public Album getAlbum(Long ID) {
+    public void addClip(Clip a) {
         try {
-            HttpGet request = new HttpGet(urlString + "/v1/albums/" + ID);
-            HttpResponse response = httpClient.execute(request);
-
-            int status = response.getStatusLine().getStatusCode();
-
-            if (status >= 200 && status < 300) {
-                HttpEntity entity = response.getEntity();
-
-                if (entity != null)
-                    return  objectMapper.readValue(EntityUtils.toString(entity), objectMapper.getTypeFactory().constructType(Album.class));
-            } else {
-                String msg = "Remote server '" + urlString + "/v1/albums" + "' is responded with status " + status + ".";
-                //log.error(msg);
-                throw new InternalServerErrorException(msg);
-            }
-        } catch (IOException e) {
-            String msg = e.getClass().getName() + " occured: " + e.getMessage();
-            //log.error(msg);
-            throw new InternalServerErrorException(msg);
-        }
-        return null;
-    }
-
-    public void addAlbum(Album a) {
-        try {
-            HttpPost request = new HttpPost(urlString + "/v1/albums");
+            HttpPost request = new HttpPost(urlString + "/v1/clips");
 
             String json = objectMapper.writeValueAsString(a);
             StringEntity entity = new StringEntity(json);

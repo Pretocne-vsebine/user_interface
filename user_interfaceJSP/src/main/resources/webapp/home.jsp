@@ -27,38 +27,46 @@
     <title>Streaming service</title>
 </head>
 <body>
-    <h2>List</h2>
+    <h1>Under construction!</h1>
+
+    <h2>Album list:</h2>
     <jsp:include page="${pageContext.request.contextPath}/albums"/>
 
-    <h1>Under construction! Not Working...</h1>
+    <h2>Clips list:</h2>
+    <jsp:include page="${pageContext.request.contextPath}/clips"/>
+
+
     <h2>Add new</h2>
     <h3>album:</h3>
     <form action="${pageContext.request.contextPath}/albums" method="post">
-        <label for="id">ID:
-            <input type="text" id="Albumid" name="id"/>
+        <label for="albumTitle">Title:
+            <input type="text" id="albumTitle" name="albumTitle"/>
         </label>
-        <label for="firstName">First name:
-            <input type="text" id="a" name="firstName"/>
-        </label>
-        <label for="lastName">Last name:
-            <input type="text" id="b" name="lastName"/>
+        <label for="albumArtist">Artist:
+            <input type="text" id="albumArtist" name="albumArtist"/>
         </label>
         <br/>
         <br/>
-        <input type="submit" id="c" name="submit" value="Add"/>
+        <input type="submit" name="submit" value="Add"/>
         <br/>
     </form>
 
     <h3>clip:</h3>
     <form action="${pageContext.request.contextPath}/clips" method="post">
-        <label for="id">ID:
-            <input type="text" id="id" name="id"/>
+        <label for="clipAuthor">Author:
+            <input type="text" id="clipAuthor" name="clipAuthor"/>
         </label>
-        <label for="firstName">First name:
-            <input type="text" id="firstName" name="firstName"/>
+        <label for="clipTitle">Title:
+            <input type="text" id="clipTitle" name="clipTitle"/>
         </label>
-        <label for="lastName">Last name:
-            <input type="text" id="lastName" name="lastName"/>
+        <label for="trackNumber">Track number:
+            <input type="number" id="trackNumber" name="trackNumber"/>
+        </label>
+        <label for="clipDate">Release date:
+            <input type="datetime-local" id="clipDate" name="clipDate"/>
+        </label>
+        <label for="clipAlbumID">Album ID:
+            <input type="number" id="clipAlbumID" name="clipAlbumID"/>
         </label>
         <br/>
         <br/>

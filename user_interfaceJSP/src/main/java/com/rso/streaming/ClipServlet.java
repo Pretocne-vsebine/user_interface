@@ -20,35 +20,63 @@
 */
 package com.rso.streaming;
 
+import com.kumuluz.ee.logs.cdi.Log;
+import com.kumuluz.ee.logs.cdi.LogParams;
+import com.rso.streaming.ententies.Album;
+import com.rso.streaming.ententies.Clip;
+import com.rso.streaming.logger.LogContextInterceptor;
+import org.eclipse.microprofile.metrics.annotation.Timed;
+
 import javax.inject.Inject;
+import javax.interceptor.Interceptors;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import com.rso.streaming.ententies.*;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.List;
 
-@WebServlet("/albums")
-public class CustomerServlet extends HttpServlet {
+@WebServlet("/clips")
+public class ClipServlet extends HttpServlet {
+
+    @Inject
+    private ClipRestClient clipRestClient;
 
     @Inject
     private AlbumRestClient albumRestClient;
 
     @Override
+    @Log(LogParams.METRICS)
+    @Timed(name = "GetClips")
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        List<Album> albums = albumRestClient.getAlbums();
-        for(Album a : albums) {
-            response.getWriter().write(a.toString() + "<br/>");
+        List<Clip> clips = clipRestClient.getClips();
+
+        if (clips == null || clips.isEmpty()) {
+            response.getWriter().write("No clips found!<br/>");
+        } else {
+            for(Clip c : clips) {
+                response.getWriter().write(c.toString() + "<br/>");
+            }
         }
     }
 
     @Override
+    @Log(LogParams.METRICS)
+    @Timed(name = "AddClip")
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        Album a = new Album(request.getParameter("albumTitle"), request.getParameter("albumArtist"));
+        LocalDateTime in = LocalDateTime.parse(request.getParameter("clipDate"), DateTimeFormatter.ISO_DATE_TIME);
+        Date d = Date.from(in.atZone(ZoneId.systemDefault()).toInstant());
 
-        albumRestClient.addAlbum(a);
+        Album a = albumRestClient.getAlbum(Long.parseLong(request.getParameter("clipAlbumID")));
+
+        Clip c = new Clip(request.getParameter("clipAuthor"), request.getParameter("clipTitle"), d, a, Integer.parseInt(request.getParameter("trackNumber")));
+
+        clipRestClient.addClip(c);
         response.sendRedirect("home.jsp");
     }
 }

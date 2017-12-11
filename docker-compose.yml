@@ -1,0 +1,6 @@
+version: "3.2"
+services:
+  user_interface:
+    image: zigakern/user_interface:v0.1.7
+    ports:
+      - 8080:8080

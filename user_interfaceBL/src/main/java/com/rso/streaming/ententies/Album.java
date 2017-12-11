@@ -1,6 +1,8 @@
 package com.rso.streaming.ententies;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Album {
 
@@ -15,6 +17,7 @@ public class Album {
         super();
         this.artist = artist;
         this.title = title;
+        this.clips = new ArrayList<>();
     }
 
     public Album() {
@@ -58,7 +61,8 @@ public class Album {
         return "Album{" +
                 "ID=" + ID +
                 ", title='" + title + '\'' +
-                ", clips=" + clips +
+                ", artist='" + artist + '\'' +
+                ", clips=" + ((clips == null || clips.isEmpty())? "[]" : clips.stream().map(x -> x.toString()).collect(Collectors.toList())) +
                 '}';
     }
 }

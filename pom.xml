@@ -26,6 +26,9 @@
         <kumuluzee-jsp-jetty.version>2.4.1</kumuluzee-jsp-jetty.version>
         <kumuluzee-rest.version>1.1.0</kumuluzee-rest.version>
         <httpclient.version>4.5.3</httpclient.version>
+        <kumuluzee-discovery-etcd.version>1.0.0</kumuluzee-discovery-etcd.version>
+        <kumuluzee-health.version>1.0.0-SNAPSHOT</kumuluzee-health.version>
+        <kumuluzee-metrics.version>1.0.0-SNAPSHOT</kumuluzee-metrics.version>
 
         <javaee-api.version>7.0</javaee-api.version>
     </properties>
@@ -65,9 +68,19 @@
                 <version>${kumuluzee-logs.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.kumuluz.ee.rest</groupId>
-                <artifactId>kumuluzee-rest-core</artifactId>
-                <version>${kumuluzee-rest.version}</version>
+                <groupId>com.kumuluz.ee.discovery</groupId>
+                <artifactId>kumuluzee-discovery-etcd</artifactId>
+                <version>${kumuluzee-discovery-etcd.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.kumuluz.ee.health</groupId>
+                <artifactId>kumuluzee-health</artifactId>
+                <version>${kumuluzee-health.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.kumuluz.ee.metrics</groupId>
+                <artifactId>kumuluzee-metrics-core</artifactId>
+                <version>${kumuluzee-metrics.version}</version>
             </dependency>
 
             <dependency>
