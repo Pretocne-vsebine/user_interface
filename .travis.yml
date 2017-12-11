@@ -9,8 +9,8 @@ services:
 
 script:
   - mvn clean package -U
-  - docker build -t zigakern/user_interface .
+  - docker build -t zigakern/user_interface:v0.1.7 .
 
 after_success:
   - docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD"
-  - docker push zigakern/user_interface
+  - docker push zigakern/user_interface:v0.1.7
