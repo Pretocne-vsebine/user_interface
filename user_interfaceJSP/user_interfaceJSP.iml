@@ -148,9 +148,19 @@
     <orderEntry type="library" name="Maven: com.kumuluz.ee.discovery:kumuluzee-discovery-etcd:1.0.0" level="project" />
     <orderEntry type="library" name="Maven: com.kumuluz.ee.discovery:kumuluzee-discovery-common:1.0.0" level="project" />
     <orderEntry type="library" name="Maven: com.vdurmont:semver4j:2.0.2" level="project" />
+    <orderEntry type="library" name="Maven: com.kumuluz.ee.fault.tolerance:kumuluzee-fault-tolerance-hystrix:1.0.0-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: com.kumuluz.ee.fault.tolerance:kumuluzee-fault-tolerance-common:1.0.0-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: org.eclipse.microprofile.fault-tolerance:microprofile-fault-tolerance-api:1.0" level="project" />
+    <orderEntry type="library" name="Maven: com.netflix.hystrix:hystrix-core:1.5.12" level="project" />
+    <orderEntry type="library" name="Maven: com.netflix.archaius:archaius-core:0.4.1" level="project" />
+    <orderEntry type="library" name="Maven: commons-configuration:commons-configuration:1.8" level="project" />
+    <orderEntry type="library" name="Maven: commons-lang:commons-lang:2.6" level="project" />
+    <orderEntry type="library" name="Maven: io.reactivex:rxjava:1.2.0" level="project" />
+    <orderEntry type="library" name="Maven: org.hdrhistogram:HdrHistogram:2.1.9" level="project" />
     <orderEntry type="library" name="Maven: org.glassfish:javax.el:3.0.0" level="project" />
     <orderEntry type="library" name="Maven: org.apache.httpcomponents:httpclient:4.5.3" level="project" />
     <orderEntry type="library" name="Maven: org.apache.httpcomponents:httpcore:4.4.6" level="project" />
     <orderEntry type="library" name="Maven: commons-codec:commons-codec:1.9" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.httpcomponents:httpmime:4.5.3" level="project" />
   </component>
 </module>

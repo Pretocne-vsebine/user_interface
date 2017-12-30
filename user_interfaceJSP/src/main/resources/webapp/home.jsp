@@ -27,7 +27,6 @@
     <title>Streaming service</title>
 </head>
 <body>
-    <h1>Under construction!</h1>
 
     <h2>Album list:</h2>
     <jsp:include page="${pageContext.request.contextPath}/albums"/>
@@ -52,7 +51,7 @@
     </form>
 
     <h3>clip:</h3>
-    <form action="${pageContext.request.contextPath}/clips" method="post">
+    <form action="${pageContext.request.contextPath}/clips" enctype="multipart/form-data" method="post">
         <label for="clipAuthor">Author:
             <input type="text" id="clipAuthor" name="clipAuthor"/>
         </label>
@@ -68,10 +67,15 @@
         <label for="clipAlbumID">Album ID:
             <input type="number" id="clipAlbumID" name="clipAlbumID"/>
         </label>
+        <label for="fileID">Upload mp3 file:
+            <input type="file" id="fileID" name="file" />
+        </label>
         <br/>
         <br/>
         <input type="submit" id="submit" name="submit" value="Add"/>
         <br/>
     </form>
+
+    <a href="index.jsp">logout</a>|
 </body>
 </html>

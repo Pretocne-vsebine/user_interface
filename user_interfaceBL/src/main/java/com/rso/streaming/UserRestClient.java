@@ -21,12 +21,11 @@
 package com.rso.streaming;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kumuluz.ee.common.config.EeConfig;
-import com.kumuluz.ee.common.runtime.EeRuntime;
 import com.kumuluz.ee.discovery.annotations.DiscoverService;
 import com.kumuluz.ee.discovery.enums.AccessType;
 import com.kumuluz.ee.fault.tolerance.annotations.GroupKey;
 import com.rso.streaming.ententies.Album;
+import com.rso.streaming.ententies.User;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -35,38 +34,31 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
-import org.apache.logging.log4j.ThreadContext;
 import org.eclipse.microprofile.faulttolerance.CircuitBreaker;
 import org.eclipse.microprofile.faulttolerance.Fallback;
 import org.eclipse.microprofile.faulttolerance.Timeout;
 
 import javax.annotation.PostConstruct;
-import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.ws.rs.InternalServerErrorException;
 import java.io.IOException;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.UUID;
 
 @CircuitBreaker
 @Timeout(value = 1, unit = ChronoUnit.SECONDS)
-@GroupKey("clips")
+@GroupKey("user")
 @RequestScoped
-public class AlbumRestClient {
+public class UserRestClient {
 
     private HttpClient httpClient;
     private ObjectMapper objectMapper;
 
     @Inject
-    @DiscoverService(value = "clip_management", version = "1.0.x", environment = "dev", accessType = AccessType.GATEWAY)
+    @DiscoverService(value = "user_management", version = "1.0.x", environment = "dev", accessType = AccessType.GATEWAY)
     private String urlString;
-
-    /*@Inject
-    private RestConfig restConfig;*/
 
     @PostConstruct
     private void init() {
@@ -74,58 +66,20 @@ public class AlbumRestClient {
         objectMapper = new ObjectMapper();
     }
 
-    @Fallback(fallbackMethod = "getAlbumsFallback")
-    public List<Album> getAlbums() {
+    @Fallback(fallbackMethod = "getUsersFallback")
+    public User getUser(User u) {
         try {
-            HttpGet request = new HttpGet(urlString + "/v1/albums");
+            HttpGet request = new HttpGet(urlString + "/v1/users/" + u.getName() + "/" + u.getPassword());
             HttpResponse response = httpClient.execute(request);
 
             int status = response.getStatusLine().getStatusCode();
 
             if (status >= 200 && status < 300) {
-                HttpEntity entity = response.getEntity();
-
-                if (entity != null)
-                    return getObjects(EntityUtils.toString(entity));
-            } else if (status == 404) { }
-            else {
-                String msg = "Remote server '" + urlString + "/v1/albums" + "' is responded with status " + status + ".";
-                //log.error(msg);
-                throw new InternalServerErrorException(msg);
-            }
-
-        } catch (IOException e) {
-            String msg = e.getClass().getName() + " occured: " + e.getMessage();
-            //log.error(msg);
-            throw new InternalServerErrorException(msg);
-        }
-        return new ArrayList<>();
-    }
-
-    public List<Album> getAlbumsFallback() {
-        return null;
-    }
-
-    private List<Album> getObjects(String json) throws IOException {
-        return json == null ? new ArrayList<>() : objectMapper.readValue(json,
-                objectMapper.getTypeFactory().constructCollectionType(List.class, Album.class));
-    }
-
-    @Fallback(fallbackMethod = "getAlbumFallback")
-    public Album getAlbum(Long ID) {
-        try {
-            HttpGet request = new HttpGet(urlString + "/v1/albums/" + ID);
-            HttpResponse response = httpClient.execute(request);
-
-            int status = response.getStatusLine().getStatusCode();
-
-            if (status >= 200 && status < 300) {
-                HttpEntity entity = response.getEntity();
-
-                if (entity != null)
-                    return  objectMapper.readValue(EntityUtils.toString(entity), objectMapper.getTypeFactory().constructType(Album.class));
+                return u;
+            } else if (status == 404) {
+                return null;
             } else {
-                String msg = "Remote server '" + urlString + "/v1/albums" + "' is responded with status " + status + ".";
+                String msg = "Remote server '" + urlString + "/v1/users" + "' is responded with status " + status + ".";
                 //log.error(msg);
                 throw new InternalServerErrorException(msg);
             }
@@ -134,19 +88,18 @@ public class AlbumRestClient {
             //log.error(msg);
             throw new InternalServerErrorException(msg);
         }
+    }
+
+    public User getUsersFallback() {
         return null;
     }
 
-    public Album getAlbumFallback(Long ID) {
-        return null;
-    }
-
-    @Fallback(fallbackMethod = "addAlbumFallback")
-    public void addAlbum(Album a) {
+    @Fallback(fallbackMethod = "addUserFallback")
+    public void addUser(User u) {
         try {
-            HttpPost request = new HttpPost(urlString + "/v1/albums");
+            HttpPost request = new HttpPost(urlString + "/v1/users");
 
-            String json = objectMapper.writeValueAsString(a);
+            String json = objectMapper.writeValueAsString(u);
             StringEntity entity = new StringEntity(json);
 
             request.setEntity(entity);
@@ -161,7 +114,7 @@ public class AlbumRestClient {
                 return;
             }
             else {
-                String msg = "Remote server '" + urlString + "/v1/albums" + "' is responded with status " + status + ".";
+                String msg = "Remote server '" + urlString + "/v1/users" + "' is responded with status " + status + ".";
                 //log.error(msg);
                 throw new InternalServerErrorException(msg);
             }
@@ -172,7 +125,7 @@ public class AlbumRestClient {
         }
     }
 
-    public void addAlbumFallback(Album a) {
+    public void addUserFallback(User u) {
 
     }
 }

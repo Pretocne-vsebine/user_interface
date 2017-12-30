@@ -29,6 +29,7 @@
         <kumuluzee-discovery-etcd.version>1.0.0</kumuluzee-discovery-etcd.version>
         <kumuluzee-health.version>1.0.0-SNAPSHOT</kumuluzee-health.version>
         <kumuluzee-metrics.version>1.0.0-SNAPSHOT</kumuluzee-metrics.version>
+        <kumuluzee-fault-tolerance.version>1.0.0-SNAPSHOT</kumuluzee-fault-tolerance.version>
 
         <javaee-api.version>7.0</javaee-api.version>
     </properties>
@@ -82,6 +83,11 @@
                 <artifactId>kumuluzee-metrics-core</artifactId>
                 <version>${kumuluzee-metrics.version}</version>
             </dependency>
+            <dependency>
+                <groupId>com.kumuluz.ee.fault.tolerance</groupId>
+                <artifactId>kumuluzee-fault-tolerance-hystrix</artifactId>
+                <version>${kumuluzee-fault-tolerance.version}</version>
+            </dependency>
 
             <dependency>
                 <groupId>javax</groupId>
@@ -91,6 +97,11 @@
             <dependency>
                 <groupId>org.apache.httpcomponents</groupId>
                 <artifactId>httpclient</artifactId>
+                <version>${httpclient.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpmime</artifactId>
                 <version>${httpclient.version}</version>
             </dependency>
 

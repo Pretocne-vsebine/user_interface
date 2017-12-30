@@ -1,5 +1,6 @@
 package com.rso.streaming.ententies;
 
+import java.io.InputStream;
 import java.util.Date;
 
 public class Clip {

@@ -21,32 +21,38 @@
 package com.rso.streaming;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kumuluz.ee.common.config.EeConfig;
-import com.kumuluz.ee.common.runtime.EeRuntime;
 import com.kumuluz.ee.discovery.annotations.DiscoverService;
 import com.kumuluz.ee.discovery.enums.AccessType;
-import com.rso.streaming.ententies.Album;
+import com.kumuluz.ee.fault.tolerance.annotations.GroupKey;
 import com.rso.streaming.ententies.Clip;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
-import org.apache.logging.log4j.ThreadContext;
+import org.eclipse.microprofile.faulttolerance.CircuitBreaker;
+import org.eclipse.microprofile.faulttolerance.Fallback;
+import org.eclipse.microprofile.faulttolerance.Timeout;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.ws.rs.InternalServerErrorException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.UUID;
 
+@CircuitBreaker
+@Timeout(value = 1, unit = ChronoUnit.SECONDS)
+@GroupKey("clips")
 @RequestScoped
 public class ClipRestClient {
 
@@ -57,12 +63,17 @@ public class ClipRestClient {
     @DiscoverService(value = "clip_management", version = "1.0.x", environment = "dev", accessType = AccessType.GATEWAY)
     private String urlString;
 
+    @Inject
+    @DiscoverService(value = "streaming_service", version = "1.0.x", environment = "dev", accessType = AccessType.GATEWAY)
+    private String urlStringStreaming;
+
     @PostConstruct
     private void init() {
         httpClient = HttpClientBuilder.create().build();
         objectMapper = new ObjectMapper();
     }
 
+    @Fallback(fallbackMethod = "getClipsFallback")
     public List<Clip> getClips() {
         try {
             HttpGet request = new HttpGet(urlString + "/v1/clips");
@@ -90,12 +101,17 @@ public class ClipRestClient {
         return new ArrayList<>();
     }
 
+    public List<Clip> getClipsFallback() {
+        return null;
+    }
+
     private List<Clip> getObjects(String json) throws IOException {
         return json == null ? new ArrayList<>() : objectMapper.readValue(json,
                 objectMapper.getTypeFactory().constructCollectionType(List.class, Clip.class));
     }
 
-    public void addClip(Clip a) {
+    @Fallback(fallbackMethod = "addClipFallback")
+    public void addClip(Clip a, InputStream file) {
         try {
             HttpPost request = new HttpPost(urlString + "/v1/clips");
 
@@ -111,10 +127,16 @@ public class ClipRestClient {
             int status = response.getStatusLine().getStatusCode();
 
             if (status >= 200 && status < 300) {
-                return;
+                HttpEntity entityc = response.getEntity();
+
+                if (entityc != null) {
+                    Clip c = objectMapper.readValue(EntityUtils.toString(entityc), objectMapper.getTypeFactory().constructType(Clip.class));
+
+                    this.saveclip(c.getID(), file);
+                }
             }
             else {
-                String msg = "Remote server '" + urlString + "/v1/albums" + "' is responded with status " + status + ".";
+                String msg = "Remote server '" + urlString + "/v1/clips" + "' is responded with status " + status + ".";
                 //log.error(msg);
                 throw new InternalServerErrorException(msg);
             }
@@ -125,5 +147,29 @@ public class ClipRestClient {
         }
     }
 
+    private void saveclip(long id, InputStream file) throws ClientProtocolException, IOException {
+        HttpPost httpPost = new HttpPost(urlStringStreaming + "/v1/clips/" + id);
 
+        MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+        builder.addBinaryBody("file", file,
+                ContentType.APPLICATION_OCTET_STREAM, "file.ext");
+        HttpEntity multipart = builder.build();
+
+        httpPost.setEntity(multipart);
+        httpPost.setHeader("Content-type", "application/octet-stream");
+
+        HttpResponse response = httpClient.execute(httpPost);
+        int status = response.getStatusLine().getStatusCode();
+
+        if (status >= 200 && status < 300) {
+            return;
+        }
+        else {
+            String msg = "Remote server '" + urlStringStreaming + "/v1/clips" + "' is responded with status " + status + ".";
+            //log.error(msg);
+            throw new InternalServerErrorException(msg);
+        }
+    }
+
+    public void addClipFallback(Clip a) {    }
 }

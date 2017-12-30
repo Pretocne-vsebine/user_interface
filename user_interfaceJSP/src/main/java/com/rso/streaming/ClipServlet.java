@@ -30,11 +30,15 @@ import org.eclipse.microprofile.metrics.annotation.Timed;
 import javax.inject.Inject;
 import javax.interceptor.Interceptors;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.Part;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -42,6 +46,7 @@ import java.util.Date;
 import java.util.List;
 
 @WebServlet("/clips")
+@MultipartConfig
 public class ClipServlet extends HttpServlet {
 
     @Inject
@@ -60,7 +65,10 @@ public class ClipServlet extends HttpServlet {
             response.getWriter().write("No clips found!<br/>");
         } else {
             for(Clip c : clips) {
-                response.getWriter().write(c.toString() + "<br/>");
+                response.getWriter().write(c.toString() + "<audio controls>\n" +
+                        "  <source src=\"http://localhost:8083/v1/clips/" + c.getID() + "\" type=\"audio/mpeg\">\n" +
+                        "Your browser does not support the audio element.\n" +
+                        "</audio>" +"<br/>");
             }
         }
     }
@@ -74,9 +82,13 @@ public class ClipServlet extends HttpServlet {
 
         Album a = albumRestClient.getAlbum(Long.parseLong(request.getParameter("clipAlbumID")));
 
-        Clip c = new Clip(request.getParameter("clipAuthor"), request.getParameter("clipTitle"), d, a, Integer.parseInt(request.getParameter("trackNumber")));
+        Part filePart = request.getPart("file"); // Retrieves <input type="file" name="file">
+        String fileName = Paths.get(filePart.getSubmittedFileName()).getFileName().toString(); // MSIE fix.
+        InputStream fileContent = filePart.getInputStream();
 
-        clipRestClient.addClip(c);
+        Clip c = new Clip(request.getParameter("clipAuthor"), request.getParameter("clipTitle"), d, a, Integer.parseInt(request.getParameter("trackNumber")));
+        clipRestClient.addClip(c, fileContent);
+
         response.sendRedirect("home.jsp");
     }
 }
