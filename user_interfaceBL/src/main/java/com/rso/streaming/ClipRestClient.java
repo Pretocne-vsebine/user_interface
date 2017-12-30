@@ -111,6 +111,7 @@ public class ClipRestClient {
     }
 
     @Fallback(fallbackMethod = "addClipFallback")
+    @Timeout(value = 300, unit = ChronoUnit.SECONDS) //File upload might take a while
     public void addClip(Clip a, InputStream file) {
         try {
             HttpPost request = new HttpPost(urlString + "/v1/clips");
@@ -161,6 +162,8 @@ public class ClipRestClient {
         HttpResponse response = httpClient.execute(httpPost);
         int status = response.getStatusLine().getStatusCode();
 
+        file.close();
+
         if (status >= 200 && status < 300) {
             return;
         }
@@ -172,4 +175,11 @@ public class ClipRestClient {
     }
 
     public void addClipFallback(Clip a) {    }
+
+    public String generateStreamingString(Clip c) {
+        return c.toString() + "<audio controls>\n" +
+                "  <source src=\"" + urlStringStreaming + "/v1/clips/" + c.getID() + "\" type=\"audio/mpeg\">\n" +
+                "Your browser does not support the audio element.\n" +
+                "</audio>" +"<br/>";
+    }
 }

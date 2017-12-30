@@ -65,10 +65,7 @@ public class ClipServlet extends HttpServlet {
             response.getWriter().write("No clips found!<br/>");
         } else {
             for(Clip c : clips) {
-                response.getWriter().write(c.toString() + "<audio controls>\n" +
-                        "  <source src=\"http://localhost:8083/v1/clips/" + c.getID() + "\" type=\"audio/mpeg\">\n" +
-                        "Your browser does not support the audio element.\n" +
-                        "</audio>" +"<br/>");
+                response.getWriter().write(clipRestClient.generateStreamingString(c));
             }
         }
     }
