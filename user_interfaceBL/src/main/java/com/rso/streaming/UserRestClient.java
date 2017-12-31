@@ -90,7 +90,7 @@ public class UserRestClient {
         }
     }
 
-    public User getUsersFallback() {
+    public User getUsersFallback(User u) {
         return null;
     }
 
